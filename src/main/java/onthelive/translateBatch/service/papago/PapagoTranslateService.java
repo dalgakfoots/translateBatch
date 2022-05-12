@@ -27,8 +27,8 @@ public class PapagoTranslateService implements TranslateService {
                 .build();
 
         PapagoResponseBody response = client.post()
-                .header("X-Naver-Client-Id", clientId)
-                .header("X-Naver-Client-Secret", clientSecret)
+                .header("X-NCP-APIGW-API-KEY-ID", clientId)
+                .header("X-NCP-APIGW-API-KEY", clientSecret)
                 .bodyValue(body)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, e -> e.bodyToMono(String.class).map(Exception::new))
