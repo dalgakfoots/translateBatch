@@ -100,6 +100,7 @@ public class TranslateBatchConfigure {
         parameterValues.put("process_code", "machine_translation");
         parameterValues.put("state", "WAIT");
         parameterValues.put("state1", "FAIL");
+        parameterValues.put("project_type_code", "12"); //TODO 프로젝트 타입 코드는 16-1 또는 16-3 이다. 프로퍼티로 별도로 관리 고려할 것.
 
         return new JdbcPagingItemReaderBuilder<Segment>()
                 .pageSize(CHUNK_SIZE)
@@ -124,13 +125,15 @@ public class TranslateBatchConfigure {
                 "a.id , a.value, " +
                 "b.job_master_id as jobMasterId, " +
                 "c.job_sub_id as jobSubId, " +
-                "c.user_id as userId ");
+                "c.user_id as userId");
         queryProvider.setFromClause("from segments a " +
                 "inner join ( select id as job_master_id, project_id as pid, document_id as did, section_id as sid, segment_id as sgid from job_masters ) b " +
                 "on a.id = b.sgid and a.section_id = b.sid and a.document_id = b.did and a.project_id = b.pid " +
                 "inner join ( select job_master_id, id as job_sub_id , user_id from job_subs) c " +
-                "on b.job_master_id = c.job_master_id");
-        queryProvider.setWhereClause("where a.current_process = :process_code and (current_state = :state or current_state = :state1)");
+                "on b.job_master_id = c.job_master_id " +
+                "inner join ( select id as pid , project_type_code from projects ) d on a.project_id = d.pid ");
+        queryProvider.setWhereClause("where a.current_process = :process_code and (current_state = :state or current_state = :state1) " +
+                "and d.project_type_code = :project_type_code");
 
         Map<String, Order> sortKeys = new HashMap<>(1);
         sortKeys.put("id", Order.ASCENDING);
