@@ -20,6 +20,7 @@ import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuild
 import org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean;
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -46,6 +47,9 @@ public class TranslateBatchConfigure {
     private final Step afterTranslateUpdateSectionStep;
 
     private static final int CHUNK_SIZE = 1;
+
+    @Value("${project-type-code}")
+    private String projectTypeCode;
 
     // --------------- MultiThread --------------- //
     private static final int DEFAULT_POOL_SIZE = 10;
@@ -100,7 +104,7 @@ public class TranslateBatchConfigure {
         parameterValues.put("process_code", "machine_translation");
         parameterValues.put("state", "WAIT");
         parameterValues.put("state1", "FAIL");
-        parameterValues.put("project_type_code", "12"); //TODO 프로젝트 타입 코드는 16-1 또는 16-3 이다. 프로퍼티로 별도로 관리 고려할 것.
+        parameterValues.put("project_type_code", projectTypeCode); //TODO 프로젝트 타입 코드는 16-1 또는 16-3 이다. 프로퍼티로 별도로 관리 고려할 것.
 
         return new JdbcPagingItemReaderBuilder<Segment>()
                 .pageSize(CHUNK_SIZE)
