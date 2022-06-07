@@ -2,6 +2,7 @@ package onthelive.translateBatch.batch.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import onthelive.translateBatch.batch.listener.NoWorkFoundStepExecutionListener;
 import onthelive.translateBatch.batch.step.AfterTranslateUpdateSectionTaskletBean;
 import onthelive.translateBatch.batch.step.TranslateProcessor;
 import onthelive.translateBatch.entity.Segment;
@@ -93,6 +94,7 @@ public class TranslateBatchConfigure {
                         updateJobSubsSetStateCompleteTranslate(),
                         updateSegmentSetStateCompleteTranslate()
                 ))
+                .listener(new NoWorkFoundStepExecutionListener())
                 .taskExecutor(executor(DEFAULT_POOL_SIZE))
                 .throttleLimit(DEFAULT_POOL_SIZE)
                 .build();
